@@ -1,0 +1,77 @@
+
+beginner.how_many_items_in_hdfs:
+    stdin: 9
+intermediate.hdfs_list_recursively:
+    stdin: "hdfs dfs -ls -R /data/wiki"
+intermediate.hdfs_list_recursively_human_readable:
+    stdin: "hdfs dfs -ls -R -h /data/wiki"
+intermediate.hdfs_file_replication_factor:
+    stdin: 3
+intermediate.hdfs_folder_replication_factor:
+    stdin: 0
+intermediate.hdfs_describe_size:
+    stdin: "actual"
+intermediate.hdfs_cumulative_size:
+    stdin: "hdfs dfs -du -h -s /data/wiki"
+intermediate.hdfs_create_folder:
+    stdin: "hdfs dfs -mkdir 75shik00"
+intermediate.hdfs_create_nested_folder:
+    stdin: "hdfs dfs -mkdir -p 75shik00/1/2/3"
+intermediate.hdfs_remove_nested_folders:
+    stdin: "hdfs dfs -rm -R 75shik00/1"
+intermediate.hdfs_trash_behavior:
+    stdin: "hdfs dfs -rm -R -skipTrash 75shik00/1"
+intermediate.hdfs_create_empty_file:
+    stdin: "hdfs dfs -touchz 75shik00/empy_file.txt"
+intermediate.hdfs_create_small_file:
+    stdin: |-
+        touch some_text.txt
+        for i in {1..15}
+        do
+        echo "some long text here" >> some_text.txt
+        done
+        hdfs dfs -put some_text.txt 75shik00/
+intermediate.hdfs_output_file:
+    stdin: "hdfs dfs -cat 75shik00/some_text.txt"
+intermediate.hdfs_output_file_end:
+    stdin: "hdfs dfs -tail 75shik00/some_text.txt"
+intermediate.hdfs_output_file_start:
+    stdin: "hdfs dfs -cat 75shik00/some_text.txt | head"
+intermediate.hdfs_tail_vs_unix_tail:
+    stdin: "tail --byte=1024 some_text.txt"
+intermediate.hdfs_copy_file:
+    stdin: "hdfs dfs -cp 75shik00/some_text.txt 75shik00/copy_text.txt"
+intermediate.hdfs_move_file:
+    stdin: |-
+        hdfs dfs -mkdir 75shik00/new_dir
+        hdfs dfs -mv 75shik00/copy_text.txt 75shik00/new_dir/
+intermediate.hdfs_download_and_concatenate:
+    stdin: "hdfs dfs -getmerge -nl 75shik00 merged_file.txt"
+advanced.hdfs_set_file_replication:
+    stdin: |-
+        hdfs dfs -setrep -w 2 75shik00/some_text.txt
+        ~15 sec
+advanced.hdfs_get_files_and_block:
+    stdin: "hdfs fsck 75shik00/some_text.txt -files -blocks -locations"
+advanced.hdfs_get_block_information:
+    stdin: "hdfs fsck -blockId blk_1106588250"
+advanced.hdfs_dfs_architecture:
+    stdin: |-
+        hdfs fsck 75shik00/copy_text.txt -files -blocks -locations
+        sudo -i -u hdfsuser
+        hdfs dfs -ls /data/namenode_example/current
+        hdfs dfs -cat /data/namenode_example/current/edits_0000000000029536578-0000000000030039785
+        hdfs dfs -cat /data/namenode_example/current/fsimage_0000000000030725661
+advanced.webhdfs_read_100B:
+    stdin: |-
+        curl -i -L "http://brain-master:50070/webhdfs/v1/data/course4/wiki/en_articles_batches/part-00000?op=OPEN&length=100"
+        multiline answer
+        here
+advanced.webhdfs_curl_follow_redirects:
+    stdin: "curl -i -L 'http://brain-master:50070/webhdfs/v1/data/course4/wiki/en_articles_batches/part-00000?op=OPEN'"
+advanced.webhdfs_get_file_detailed_information:
+    stdin: "curl -i -L 'http://brain-master:50070/webhdfs/v1/data/course4/wiki/en_articles_batches/part-00000?op=GETFILESTATUS'"
+advanced.webhdfs_change_file_replication:
+    stdin: "curl -i -X PUT 'http://brain-master:50070/webhdfs/v1/user/bd_made2022q2/75shik00/some_text.txt?user.name=bd_made2022q2&op=SETREPLICATION&replication=2'"
+advanced.webhdfs_append_to_file:
+    stdin: "curl -i -L -X POST -T some_text.txt 'http://brain-master:50070/webhdfs/v1/user/bd_made2022q2/75shik00/some_text.txt?user.name=bd_made2022q2&op=APPEND'"
